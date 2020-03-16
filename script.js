@@ -11,16 +11,18 @@ var scoreBuck = document.querySelector(".scorebucket");
 var highList = document.querySelector("#highscores");
 var highListCont = document.querySelector("#highbucket");
 var scoreLink = document.querySelector(".scorelink");
-var theHighScoreDiv = document.querySelector(".highscorebucket")
-
+var theHighScoreDiv = document.querySelector(".highscorebucket");
+var timeCount = document.querySelector(".timer");
 var i = 0;
 var scoreCount = 0;
 var z = 0;
 var highScores = [];
+var timeLeft = 65;
+var interval = setInterval(startTimer, 1000);
 
 getTheScores();
 
-    scoreDiv.remove()
+scoreDiv.remove()
 
 var questionsOb = [
     {
@@ -67,9 +69,12 @@ var questionsOb = [
 
 // Each time a question is answered, show next question
 // TODO: need to figure out how to look through the object or just use strings - still need loop though
+
+
 function makeQuiz() {
 
     quizList.textContent = "";
+
 
     if (i < questionsOb.length) {
         var newDiv0 = document.createElement("div");
@@ -93,7 +98,7 @@ function makeQuiz() {
         }
     } else {
         renderScore();
-        
+
     }
 
     i++;
@@ -103,17 +108,18 @@ function makeQuiz() {
 }
 
 function getTheScores() {
-    
-    var storedScores = JSON.parse(localStorage.getItem("highScores"));
-  
-    if (storedScores !== null) {
-      highScores = storedScores;
-    }
-  
-}
-    function renderScore() {
 
-    var initials = prompt("what are your initials?");
+    var storedScores = JSON.parse(localStorage.getItem("highScores"));
+
+    if (storedScores !== null) {
+        highScores = storedScores;
+    }
+
+}
+function renderScore() {
+    clearInterval(interval);
+    theQuiz.setAttribute("class", "away");
+    var initials = prompt("Game over. What are your initials?");
     var scoreList = `${scoreCount} - ${initials}`
     highScores.push(scoreList);
     theScore.textContent = `Your Score is ${scoreCount}`;
@@ -124,24 +130,30 @@ function getTheScores() {
 }
 
 
-// function displaySomething() {
-//     bigBucket.append(theHighScoreDiv);
-//     highList.textContent = "kaboom";
-//     highListCont.appendChild(highList);
-// }
 
 
 
 
-    startButt.addEventListener("click", function () {
-        intro.setAttribute("class", "away");
-        makeQuiz();
-    })
+
+
+
+// getting the timer to behave was difficult. it starts on page load, which isn't ideal. works otherwise, though.
+
+function startTimer() {
+    timeLeft--;
+    timeCount.textContent = `Time left: ${timeLeft}`;
+
+    if (timeLeft === 0) {
+        // not sure this is actually doing anything here...
+        renderScore()
+    }
+};
+
 
 
 function storeScore() {
     localStorage.setItem("highScores", JSON.stringify(highScores));
-}
+};
 
 
 function tallyScore(what) {
@@ -149,32 +161,28 @@ function tallyScore(what) {
     var userAns = parseInt(what);
     if (userAns === rightAns) {
         scoreCount++;
+    } else {
+        timeLeft = timeLeft - 15;
     }
 
 
     z++;
-}
+};
 
-// scoreLink.addEventListener("click", displaySomething);
+startButt.addEventListener("click", function () {
+    intro.setAttribute("class", "away");
+    makeQuiz();
+});
 
-    quizList.addEventListener("click", function () {
+quizList.addEventListener("click", function () {
 
-        var element = event.target;
-        if (element.matches("button") === true) {
-            var index = element.parentElement.getAttribute("data-index");
-            // console.log(index);
-            tallyScore(index);
-            makeQuiz();
-        }
-    })
-;
+    var element = event.target;
+    if (element.matches("button") === true) {
+        var index = element.parentElement.getAttribute("data-index");
+        // console.log(index);
+        tallyScore(index);
+        makeQuiz();
+    }
+});
 
 
-// Make timer begin on start button press
-// If wrong answer is given, remove time from timer
-
-// Once questions are answered OR no time left, game over
-
-// When game is over, enter initials field shows
-
-// score and initials are locally stored and can be accessed via "high scores" link
