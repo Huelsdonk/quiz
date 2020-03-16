@@ -8,10 +8,19 @@ var submitButt = document.querySelector("#answersubmit");
 var theScore = document.querySelector("#score");
 var scoreDiv = document.querySelector("#scorediv");
 var scoreBuck = document.querySelector(".scorebucket");
+var highList = document.querySelector("#highscores");
+var highListCont = document.querySelector("#highbucket");
+var scoreLink = document.querySelector(".scorelink");
+var theHighScoreDiv = document.querySelector(".highscorebucket")
+
 var i = 0;
 var scoreCount = 0;
 var z = 0;
-scoreDiv.remove();
+var highScores = [];
+
+getTheScores();
+
+    scoreDiv.remove()
 
 var questionsOb = [
     {
@@ -59,9 +68,7 @@ var questionsOb = [
 // Each time a question is answered, show next question
 // TODO: need to figure out how to look through the object or just use strings - still need loop though
 function makeQuiz() {
-    
 
-    
     quizList.textContent = "";
 
     if (i < questionsOb.length) {
@@ -77,7 +84,6 @@ function makeQuiz() {
             newDiv.innerHTML = questionsOb[i].answers[y];
             newDiv.setAttribute("data-index", y);
             var button = document.createElement("button");
-            // gotta figure out how to keep score here. radio buttons maybe????
             button.setAttribute("class", "btn btn-light btn-sm ml-2");
             button.setAttribute("type", "submit");
             button.textContent = "Select";
@@ -86,41 +92,72 @@ function makeQuiz() {
 
         }
     } else {
-        var initials = prompt("what are your initials?");
-        theScore.textContent = `Score: ${initials} - ${scoreCount}`;
-        scoreBuck.appendChild(theScore);
-        storeScore();
-        bigBucket.append(scoreDiv);
+        renderScore();
+        
     }
-    
-
 
     i++;
-    
+
+
+
 }
+
+function getTheScores() {
+    
+    var storedScores = JSON.parse(localStorage.getItem("highScores"));
+  
+    if (storedScores !== null) {
+      highScores = storedScores;
+    }
+  
+}
+    function renderScore() {
+
+    var initials = prompt("what are your initials?");
+    var scoreList = `${scoreCount} - ${initials}`
+    highScores.push(scoreList);
+    theScore.textContent = `Your Score is ${scoreCount}`;
+    scoreBuck.appendChild(theScore);
+    bigBucket.append(scoreDiv);
+    console.log(scoreCount);
+    storeScore();
+}
+
+
+// function displaySomething() {
+//     bigBucket.append(theHighScoreDiv);
+//     highList.textContent = "kaboom";
+//     highListCont.appendChild(highList);
+// }
+
+
+
+
     startButt.addEventListener("click", function () {
         intro.setAttribute("class", "away");
         makeQuiz();
     })
 
-    function storeScore() {
-        localStorage.setItem("scoreCount", JSON.stringify(scoreCount));
+
+function storeScore() {
+    localStorage.setItem("highScores", JSON.stringify(highScores));
+}
+
+
+function tallyScore(what) {
+    var rightAns = questionsOb[z].correct;
+    var userAns = parseInt(what);
+    if (userAns === rightAns) {
+        scoreCount++;
     }
 
-    
-    function tallyScore(what) {
-        var rightAns = questionsOb[z].correct;
-        var userAns = parseInt(what);
-        if (userAns === rightAns) {
-            scoreCount++;
-        }
-        
 
-        z++;
-    }
-    
+    z++;
+}
 
-    quizList.addEventListener("click", function(){
+// scoreLink.addEventListener("click", displaySomething);
+
+    quizList.addEventListener("click", function () {
 
         var element = event.target;
         if (element.matches("button") === true) {
@@ -129,7 +166,8 @@ function makeQuiz() {
             tallyScore(index);
             makeQuiz();
         }
-    }); 
+    })
+;
 
 
 // Make timer begin on start button press
