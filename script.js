@@ -1,4 +1,3 @@
-// When start is pressed, hide jumbo, show first question
 var bigBucket = document.querySelector(".container");
 var intro = document.querySelector(".poof");
 var startButt = document.querySelector("#startButton");
@@ -18,7 +17,7 @@ var scoreCount = 0;
 var z = 0;
 var highScores = [];
 var timeLeft = 65;
-var interval = setInterval(startTimer, 1000);
+var interval;
 
 getTheScores();
 
@@ -67,8 +66,6 @@ var questionsOb = [
     }];
 
 
-// Each time a question is answered, show next question
-// TODO: need to figure out how to look through the object or just use strings - still need loop though
 
 
 function makeQuiz() {
@@ -116,18 +113,7 @@ function getTheScores() {
     }
 
 }
-function renderScore() {
-    clearInterval(interval);
-    theQuiz.setAttribute("class", "away");
-    var initials = prompt("Game over. What are your initials?");
-    var scoreList = `${scoreCount} - ${initials}`
-    highScores.push(scoreList);
-    theScore.textContent = `Your Score is ${scoreCount}`;
-    scoreBuck.appendChild(theScore);
-    bigBucket.append(scoreDiv);
-    console.log(scoreCount);
-    storeScore();
-}
+
 
 
 
@@ -140,6 +126,8 @@ function renderScore() {
 // getting the timer to behave was difficult. it starts on page load, which isn't ideal. works otherwise, though.
 
 function startTimer() {
+    clearInterval(interval);
+    interval = setInterval(startTimer, 1000);
     timeLeft--;
     timeCount.textContent = `Time left: ${timeLeft}`;
 
@@ -149,6 +137,19 @@ function startTimer() {
     }
 };
 
+
+function renderScore() {
+    clearInterval(interval);
+    theQuiz.setAttribute("class", "away");
+    var initials = prompt("Game over. What are your initials?");
+    var scoreList = `${scoreCount} - ${initials}`
+    highScores.push(scoreList);
+    theScore.textContent = `Your Score is ${scoreCount}`;
+    scoreBuck.appendChild(theScore);
+    bigBucket.append(scoreDiv);
+    console.log(scoreCount);
+    storeScore();
+}
 
 
 function storeScore() {
@@ -171,6 +172,7 @@ function tallyScore(what) {
 
 startButt.addEventListener("click", function () {
     intro.setAttribute("class", "away");
+    startTimer();
     makeQuiz();
 });
 
